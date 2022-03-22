@@ -1,3 +1,9 @@
+# IDE
+.vscode
+
+# soft link
+nngev_training_data
+
 __data
 *DS_Store
 

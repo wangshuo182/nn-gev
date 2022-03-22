@@ -28,12 +28,13 @@ if nargin < 1,
     official=true;
 end
 
-addpath ../utils;
-upath='../../data/audio/16kHz/isolated/'; % path to segmented utterances
-upath_ext = '../../data/audio/16kHz/isolated_ext/';
-cpath='../../data/audio/16kHz/embedded/'; % path to continuous recordings
-bpath='../../data/audio/16kHz/backgrounds/'; % path to noise backgrounds
-apath='../../data/annotations/'; % path to JSON annotations
+addpath /media/asus/DATADISK/DATASETS/CHiME4/tools/utils;
+addpath /media/asus/DATADISK/DATASETS/CHiME4/tools/simulation;
+upath='/media/asus/DATADISK/DATASETS/CHiME4/data/audio/16kHz/isolated/'; % path to segmented utterances
+upath_ext = '/media/asus/DATADISK/DATASETS/CHiME4/data/audio/16kHz/isolated_ext/';
+cpath='/media/asus/DATADISK/DATASETS/CHiME4/data/audio/16kHz/embedded/'; % path to continuous recordings
+bpath='/media/asus/DATADISK/DATASETS/CHiME4/data/audio/16kHz/backgrounds/'; % path to noise backgrounds
+apath='/media/asus/DATADISK/DATASETS/CHiME4/data/annotations/'; % path to JSON annotations
 nchan=6;
 
 % Define hyper-parameters
@@ -45,10 +46,12 @@ wlen_add=1024; % STFT window length in samples for speaker localization
 del=-3; % minimum delay (0 for a causal filter)
 
 %% Create simulated training dataset from original WSJ0 data %%
+disp("Create simulated training dataset from original WSJ0 data")
 if exist('equal_filter.mat','file'),
     load('equal_filter.mat');
 else
     % Compute average power spectrum of booth data
+    disp("Compute average power spectrum of booth data")
     nfram=0;
     bth_spec=zeros(wlen_sub/2+1,1);
     sets={'tr05' 'dt05'};
@@ -156,6 +159,7 @@ else
 end
 
 % Loop over utterances
+disp("Loop over utterances")
 for utt_ind=1:length(mat),
     if official,
         udir=[upath 'tr05_' lower(mat{utt_ind}.environment) '_simu/'];
@@ -212,7 +216,7 @@ for utt_ind=1:length(mat),
     [nbin,nfram] = size(O);
     
     % Localize and track the speaker
-    [~,TDOAx]=localize(X);
+    [~,TDOAx]=localize(wX);
     
     % Interpolate the spatial position over the duration of clean speech
     TDOA=zeros(nchan,nfram);
@@ -242,7 +246,8 @@ for utt_ind=1:length(mat),
     end
 end
 
-%% Create simulated development and test datasets from booth recordings %%
+%%  Create simulated development and test datasets from booth recordings %%
+disp("Create simulated development and test datasets from booth recordings")
 sets={'dt05' 'et05'};
 for set_ind=1:length(sets),
     set=sets{set_ind};
